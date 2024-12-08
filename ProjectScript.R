@@ -537,11 +537,15 @@ ggplot(partner_intent_df, aes(x = SPWRKST, y = Freq, fill = INTENT)) +
 
 
 ## Regression analysis
-# CORE Models
+# subsetting data to remove the "Uncertain" category observations
+female_binary <- subset(female_design, INTENT != "Uncertain")
+male_binary <- subset(male_design, INTENT != "Uncertain")
 
+
+# CORE Models
 # Core regression for female dataset
 female_core_model <- svyglm(INTENT ~ AGER + HIEDUC + RMARITAL + LABORFOR,
-                            design = female_design,
+                            design = female_binary,
                             family = quasibinomial())
 
 # Summary of the female core model
@@ -549,17 +553,19 @@ summary(female_core_model)
 
 # Core regression for male dataset
 male_core_model <- svyglm(INTENT ~ AGER + HIEDUC + RMARITAL + LABORFOR,
-                          design = male_design,
+                          design = male_binary,
                           family = quasibinomial())
 
 # Summary of the male core model
 summary(male_core_model)
 
 # EXTENDED Models
+female_binary_partner <- subset(female_binary, SPWRKST != "NA")
+male_binary_partner <- subset(male_binary, SPWRKST != "NA")
 # Extended regression for female dataset
 female_extended_model <- svyglm(
   INTENT ~ AGER + HIEDUC + RMARITAL + LABORFOR + SPWRKST,
-  design = female_with_partner,
+  design = female_binary_partner,
   family = quasibinomial()
 )
 
@@ -569,7 +575,7 @@ summary(female_extended_model)
 # Extended regression for male dataset
 male_extended_model <- svyglm(
   INTENT ~ AGER + HIEDUC + RMARITAL + LABORFOR + SPWRKST,
-  design = male_with_partner,
+  design = male_binary_partner,
   family = quasibinomial()
 )
 
